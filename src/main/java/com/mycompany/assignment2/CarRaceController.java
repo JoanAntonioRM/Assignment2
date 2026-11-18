@@ -4,6 +4,7 @@
  */
 package com.mycompany.assignment2;
 
+import com.mycompany.assignment2.CarRaceModel.Car;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -18,6 +19,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 /**
@@ -27,6 +30,8 @@ import javafx.util.Duration;
 public class CarRaceController {
     
     private static final double SLIDE_SECONDS = 3;
+    
+    private enum State { READY, RUNNING, PAUSED, FINISHED }
     
     @FXML
     private Label captionLabel;
