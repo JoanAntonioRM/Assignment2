@@ -61,6 +61,23 @@ public class CarRaceModel {
         public int getFinishPlace() {
             return finishPlace;
         }
+        
+        public void updatePosition(double newX, double newY) {
+            this.x = newX;
+            this.y = newY;
+        }
+
+        public void setSpeed(double speed) {
+            this.speed = speed;
+        }
+
+        public void setFinishPlace(int finishPlace) {
+            this.finishPlace = finishPlace;
+        }
+
+        public String getLabel() {
+            return "Car #" + number + " (" + colorName + ")";
+        }
     }
     
 }
