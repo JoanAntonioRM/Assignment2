@@ -18,6 +18,13 @@ import javafx.scene.layout.VBox;
  * @author Joan
  */
 public class CarRaceController {
+    
+    @FXML
+    private Label captionLabel;
+    @FXML
+    private Button skipButton;
+    @FXML
+    private ImageView slideImage;
 
     @FXML
     private Pane trackPane;
@@ -40,6 +47,10 @@ public class CarRaceController {
     @FXML
     private Label infoLabel;
 
+    @FXML
+    void onSkip(ActionEvent event) {
+    }
+    
     @FXML
     private void onStart(ActionEvent event) {
     }
