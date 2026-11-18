@@ -4,10 +4,53 @@
  */
 package com.mycompany.assignment2;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+
 /**
  *
  * @author Joan
  */
 public class CarRaceController {
+
+    @FXML
+    private Pane trackPane;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button pauseButton;
+    @FXML
+    private Button resetButton;
+    @FXML
+    private Slider speedSlider;
+    @FXML
+    private Label speedValueLabel;
+    @FXML
+    private Label messageTitleLabel;
+    @FXML
+    private Label messageLabel;
+    @FXML
+    private VBox resultsBox;
+    @FXML
+    private Label infoLabel;
+
+    @FXML
+    private void onStart(ActionEvent event) {
+    }
+
+    @FXML
+    private void onPause(ActionEvent event) {
+    }
+
+    @FXML
+    private void onReset(ActionEvent event) {
+    }
+
     
 }
