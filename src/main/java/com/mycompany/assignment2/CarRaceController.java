@@ -4,20 +4,29 @@
  */
 package com.mycompany.assignment2;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  *
  * @author Joan
  */
 public class CarRaceController {
+    
+    private static final double SLIDE_SECONDS = 3;
     
     @FXML
     private Label captionLabel;
@@ -46,9 +55,78 @@ public class CarRaceController {
     private VBox resultsBox;
     @FXML
     private Label infoLabel;
+    
+    private final CarRaceModel model = new CarRaceModel();
+    private final CarRaceView view = new CarRaceView();
+
+    private State state = State.READY;
+    private Timeline slideshow;
+    private MediaPlayer player;
+    private boolean raceShown = false;
+    
+    public void startSlideshow() {
+        playSound();
+        List<Car> cars = model.getCars();
+        showSlide(0);
+        slideshow = new Timeline();
+        for (int i = 1; i < cars.size(); i++) {
+            final int index = i;
+            slideshow.getKeyFrames().add(new KeyFrame(Duration.seconds(i * SLIDE_SECONDS), e -> showSlide(index)));
+        }
+        slideshow.getKeyFrames().add(new KeyFrame(Duration.seconds(cars.size() * SLIDE_SECONDS), e -> endSlideshow()));
+        slideshow.play();
+    }
+
+    private void showSlide(int index) {
+        Car car = model.getCars().get(index);
+        Image image = view.loadImage(car);
+        if (image == null) {
+            System.err.println("Missing image for car " + car.getNumber());
+            return;
+        }
+        slideImage.setImage(image);
+        captionLabel.setText("Car #" + car.getNumber() + "  -  " + car.getColorName() + " " + car.getType());
+        javafx.animation.FadeTransition fade = new javafx.animation.FadeTransition(Duration.millis(600), slideImage);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.play();
+    }
 
     @FXML
-    void onSkip(ActionEvent event) {
+    private void onSkip() {
+        endSlideshow();
+    }
+
+    private void endSlideshow() {
+        if (raceShown) {
+            return;
+        }
+        raceShown = true;
+        if (slideshow != null) {
+            slideshow.stop();
+        }
+        if (player != null) {
+            player.stop();
+        }
+        try {
+            App.showRace();
+        } catch (IOException e) {
+            System.err.println("Could not load secondary.fxml: " + e.getMessage());
+        }
+    }
+
+    private void playSound() {
+        try {
+            URL url = getClass().getResource("sounds/welcome.wav");
+            if (url != null) {
+                player = new MediaPlayer(new Media(url.toExternalForm()));
+                player.setVolume(0.6);
+                player.setOnError(() -> System.err.println("Sound error: " + player.getError()));
+                player.play();
+            }
+        } catch (Exception e) {
+            System.err.println("Could not play sound: " + e.getMessage());
+        }
     }
     
     @FXML
