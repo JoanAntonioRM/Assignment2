@@ -4,6 +4,10 @@
  */
 package com.mycompany.assignment2;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  *
  * @author Joan
@@ -18,6 +22,10 @@ public class CarRaceModel {
 
     private static final double MIN_SPEED = 60;
     private static final double MAX_SPEED = 90;
+    
+    private final List<Car> cars = new ArrayList<>();
+    private final List<Car> finishOrder = new ArrayList<>();
+    private final Random random = new Random();
     
     public static class Car {
         
@@ -100,6 +108,24 @@ public class CarRaceModel {
     private void addCar(String type, int number, String colorName, String colorHex) {
         double y = cars.size() * LANE_HEIGHT + (LANE_HEIGHT - CAR_HEIGHT) / 2;
         cars.add(new Car(type, number, colorName, colorHex, START_X, y));
+    }
+    
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public List<Car> getFinishOrder() {
+        return finishOrder;
+    }
+
+    public double getTravelDistance() {
+        return FINISH_X - (START_X + CAR_WIDTH);
+    }
+
+    public void randomizeSpeeds() {
+        for (Car car : cars) {
+            car.setSpeed(MIN_SPEED + random.nextDouble() * (MAX_SPEED - MIN_SPEED));
+        }
     }
     
 }
