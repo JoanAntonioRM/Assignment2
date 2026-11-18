@@ -128,4 +128,32 @@ public class CarRaceModel {
         }
     }
     
+    public void updateCarPosition(Car car, double newX) {
+        car.updatePosition(newX, car.getY());
+    }
+
+    public int registerFinish(Car car) {
+        if (!finishOrder.contains(car)) {
+            finishOrder.add(car);
+            car.setFinishPlace(finishOrder.size());
+        }
+        return car.getFinishPlace();
+    }
+
+    public Car getWinner() {
+        return finishOrder.isEmpty() ? null : finishOrder.get(0);
+    }
+
+    public boolean isRaceFinished() {
+        return finishOrder.size() == cars.size();
+    }
+
+    public void reset() {
+        finishOrder.clear();
+        for (Car car : cars) {
+            car.updatePosition(START_X, car.getY());
+            car.setFinishPlace(0);
+        }
+        randomizeSpeeds();
+    }
 }
