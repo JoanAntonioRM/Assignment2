@@ -9,6 +9,15 @@ package com.mycompany.assignment2;
  * @author Joan
  */
 public class CarRaceModel {
+    public static final double TRACK_WIDTH = 800;
+    public static final double LANE_HEIGHT = 85;
+    public static final double CAR_WIDTH = 110;
+    public static final double CAR_HEIGHT = 44;
+    public static final double START_X = 15;
+    public static final double FINISH_X = 780;
+
+    private static final double MIN_SPEED = 60;
+    private static final double MAX_SPEED = 90;
     
     public static class Car {
         
@@ -78,6 +87,19 @@ public class CarRaceModel {
         public String getLabel() {
             return "Car #" + number + " (" + colorName + ")";
         }
+    }
+    
+    public CarRaceModel() {
+        addCar("Sedan", 23, "Blue", "#1e88e5");
+        addCar("Sports Coupe", 45, "Red", "#e53935");
+        addCar("Hatchback", 78, "Green", "#43a047");
+        addCar("Taxi", 88, "Yellow", "#fdd835");
+        randomizeSpeeds();
+    }
+    
+    private void addCar(String type, int number, String colorName, String colorHex) {
+        double y = cars.size() * LANE_HEIGHT + (LANE_HEIGHT - CAR_HEIGHT) / 2;
+        cars.add(new Car(type, number, colorName, colorHex, START_X, y));
     }
     
 }
