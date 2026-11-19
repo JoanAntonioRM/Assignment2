@@ -20,6 +20,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 940, 620);
         stage.setScene(scene);
+        stage.setTitle("CarRace Simulation");
         stage.setOnCloseRequest(e -> controller.shutdown());
         stage.show();
         controller.startSlideshow();
