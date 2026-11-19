@@ -44,35 +44,83 @@ public class CarRaceView {
     
     private Group createCar(CarRaceModel.Car car) {
         Color color = Color.web(car.getColorHex());
+        Group group = new Group();
 
-        Polygon body = new Polygon(0, 34, 0, 22, 14, 18, 96, 18, 110, 24, 110, 34);
-        body.setFill(color);
-
-        Polygon roof = new Polygon(24, 18, 36, 3, 72, 3, 88, 18);
-        roof.setFill(color.darker());
-
-        Rectangle window1 = new Rectangle(40, 6, 14, 10);
-        Rectangle window2 = new Rectangle(58, 6, 14, 10);
-        window1.setFill(Color.web("#81d4fa"));
-        window2.setFill(Color.web("#81d4fa"));
-
-        Rectangle plate = new Rectangle(42, 21, 26, 12);
-        plate.setArcWidth(4);
-        plate.setArcHeight(4);
-        plate.setFill(Color.WHITE);
-
-        Text number = new Text(47, 31, String.valueOf(car.getNumber()));
-        number.setFill(Color.BLACK);
-        number.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        switch (car.getType()) {
+            case "Sports Coupe":
+                addBodyParts(group, color,
+                        new double[]{0, 34, 0, 25, 8, 22, 92, 22, 104, 26, 110, 29, 110, 34},
+                        new double[]{30, 22, 52, 9, 76, 9, 98, 22},
+                        new double[][]{{50, 12, 10, 7}, {62, 12, 10, 7}});
+                group.getChildren().addAll(
+                        createRect(0, 15, 14, 3, color.darker().darker()),
+                        createRect(3, 18, 3, 7, color.darker().darker()));
+                addPlate(group, car, 23, 10, 11);
+                break;
+            case "Hatchback":
+                addBodyParts(group, color,
+                        new double[]{0, 34, 0, 20, 6, 18, 92, 18, 106, 24, 110, 28, 110, 34},
+                        new double[]{4, 18, 8, 3, 66, 3, 86, 18},
+                        new double[][]{{16, 6, 18, 9}, {38, 6, 18, 9}});
+                addPlate(group, car, 21, 12, 12);
+                break;
+            case "Taxi":
+                addBodyParts(group, color,
+                        new double[]{0, 34, 0, 20, 6, 18, 94, 18, 110, 24, 110, 34},
+                        new double[]{20, 18, 28, 4, 76, 4, 88, 18},
+                        new double[][]{{32, 7, 16, 9}, {54, 7, 16, 9}});
+                Rectangle sign = createRect(40, -2, 24, 6, Color.web("#212121"));
+                Text signText = new Text(43, 3, "TAXI");
+                signText.setFill(Color.WHITE);
+                signText.setFont(Font.font("Arial", FontWeight.BOLD, 6));
+                group.getChildren().addAll(sign, signText);
+                for (int i = 0; i < 22; i += 2) {
+                    group.getChildren().add(createRect(i * 5, 29, 5, 3, Color.BLACK));
+                }
+                addPlate(group, car, 21, 12, 12);
+                break;
+            default:
+                addBodyParts(group, color,
+                        new double[]{0, 34, 0, 21, 8, 18, 92, 18, 106, 22, 110, 26, 110, 34},
+                        new double[]{22, 18, 32, 4, 70, 4, 84, 18},
+                        new double[][]{{36, 7, 14, 9}, {54, 7, 14, 9}});
+                addPlate(group, car, 21, 12, 12);
+                break;
+        }
 
         List<Group> wheels = new ArrayList<>();
         wheels.add(createWheel(24, 36));
         wheels.add(createWheel(86, 36));
         wheelNodes.put(car, wheels);
-
-        Group group = new Group(body, roof, window1, window2, plate, number);
         group.getChildren().addAll(wheels);
         return group;
+    }
+    
+    private void addBodyParts(Group group, Color color, double[] bodyPoints, double[] roofPoints, double[][] windows) {
+        Polygon body = new Polygon(bodyPoints);
+        body.setFill(color);
+        Polygon roof = new Polygon(roofPoints);
+        roof.setFill(color.darker());
+        group.getChildren().addAll(body, roof);
+        for (double[] w : windows) {
+            group.getChildren().add(createRect(w[0], w[1], w[2], w[3], Color.web("#81d4fa")));
+        }
+    }
+
+    private void addPlate(Group group, CarRaceModel.Car car, double y, double height, double fontSize) {
+        Rectangle plate = createRect(42, y, 26, height, Color.WHITE);
+        plate.setArcWidth(4);
+        plate.setArcHeight(4);
+        Text number = new Text(47, y + height - 2, String.valueOf(car.getNumber()));
+        number.setFill(Color.BLACK);
+        number.setFont(Font.font("Arial", FontWeight.BOLD, fontSize));
+        group.getChildren().addAll(plate, number);
+    }
+
+    private Rectangle createRect(double x, double y, double width, double height, Color color) {
+        Rectangle rect = new Rectangle(x, y, width, height);
+        rect.setFill(color);
+        return rect;
     }
     
     private Group createWheel(double centerX, double centerY) {
