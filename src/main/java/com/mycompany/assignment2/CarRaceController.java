@@ -8,6 +8,7 @@ import com.mycompany.assignment2.CarRaceModel.Car;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -30,6 +31,7 @@ import javafx.util.Duration;
 public class CarRaceController {
     
     private static final double SLIDE_SECONDS = 3;
+    private static final double WHEEL_TURN_SECONDS = 0.5;
     
     private enum State { READY, RUNNING, PAUSED, FINISHED }
     
@@ -115,7 +117,7 @@ public class CarRaceController {
         }
         try {
             App.showRace();
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.err.println("Could not load secondary.fxml: " + e.getMessage());
         }
     }
@@ -134,16 +136,54 @@ public class CarRaceController {
         }
     }
     
-    @FXML
-    private void onStart(ActionEvent event) {
+    private void setupRace() {
+        view.addCars(trackPane, model.getCars());
+        for (Car car : model.getCars()) {
+            view.getCarNode(car).translateXProperty().addListener((obs, oldValue, newValue) -> model.updateCarPosition(car, CarRaceModel.START_X + newValue.doubleValue()));
+        }
+        speedSlider.valueProperty().addListener((obs, oldValue, newValue) -> changeSpeed(newValue.doubleValue()));
+        updateButtons();
     }
 
     @FXML
-    private void onPause(ActionEvent event) {
+    private void onStart() {
+        if (state == State.READY) {
+            createAnimations();
+        }
+        if (state == State.READY || state == State.PAUSED) {
+            showMessage("Race in progress...", "The cars are on their way to the finish line!");
+            moves.forEach(Animation::play);   // play() also resumes a paused transition
+            spins.forEach(Animation::play);
+            state = State.RUNNING;
+            updateButtons();
+        }
     }
 
     @FXML
-    private void onReset(ActionEvent event) {
+    private void onPause() {
+        if (state == State.RUNNING) {
+            moves.forEach(Animation::pause);
+            spins.forEach(Animation::pause);
+            state = State.PAUSED;
+            showMessage("Race paused", "Press Start to continue.");
+            updateButtons();
+        }
+    }
+
+    @FXML
+    private void onReset() {
+        moves.forEach(Animation::stop);
+        spins.forEach(Animation::stop);
+        moves.clear();
+        spins.clear();
+        for (Car car : model.getCars()) {
+            view.getCarNode(car).setTranslateX(0);
+            view.getWheels(car).forEach(wheel -> wheel.setRotate(0));
+        }
+        model.reset();
+        state = State.READY;
+        showMessage("Ready to race!", "Press Start to begin the race.");
+        updateButtons();
     }
 
     
