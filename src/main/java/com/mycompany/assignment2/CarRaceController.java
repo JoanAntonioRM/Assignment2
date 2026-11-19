@@ -70,11 +70,20 @@ public class CarRaceController {
     
     private final CarRaceModel model = new CarRaceModel();
     private final CarRaceView view = new CarRaceView();
+    private final List<TranslateTransition> moves = new ArrayList<>();
+    private final List<RotateTransition> spins = new ArrayList<>();
 
     private State state = State.READY;
     private Timeline slideshow;
     private MediaPlayer player;
     private boolean raceShown = false;
+    
+    @FXML
+    private void initialize() {
+        if (trackPane != null) {
+            setupRace();
+        }
+    }
     
     public void startSlideshow() {
         playSound();
