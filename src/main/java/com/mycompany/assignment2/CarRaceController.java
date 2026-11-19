@@ -7,12 +7,17 @@ package com.mycompany.assignment2;
 import com.mycompany.assignment2.CarRaceModel.Car;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.Animation;
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -185,6 +190,78 @@ public class CarRaceController {
         showMessage("Ready to race!", "Press Start to begin the race.");
         updateButtons();
     }
-
     
+    private void createAnimations() {
+        double distance = model.getTravelDistance();
+        double rate = speedSlider.getValue();
+        for (Car car : model.getCars()) {
+            TranslateTransition move = new TranslateTransition(Duration.seconds(distance / car.getSpeed()), view.getCarNode(car));
+            move.setFromX(0);
+            move.setToX(distance);
+            move.setInterpolator(Interpolator.LINEAR);
+            move.setRate(rate);
+
+            List<RotateTransition> carSpins = new ArrayList<>();
+            for (Group wheel : view.getWheels(car)) {
+                RotateTransition spin = new RotateTransition(Duration.seconds(WHEEL_TURN_SECONDS), wheel);
+                spin.setByAngle(360);
+                spin.setCycleCount(Animation.INDEFINITE);
+                spin.setInterpolator(Interpolator.LINEAR);
+                spin.setRate(rate);
+                carSpins.add(spin);
+            }
+            move.setOnFinished(e -> {
+                carSpins.forEach(Animation::stop);
+                onCarFinished(car);
+            });
+            moves.add(move);
+            spins.addAll(carSpins);
+        }
+    }
+
+    private void onCarFinished(Car car) {
+        int place = model.registerFinish(car);
+        if (place == 1) {
+            showMessage("We have a winner!", car.getLabel() + " crossed the finish line first!");
+        }
+        if (model.isRaceFinished()) {
+            state = State.FINISHED;
+            showFinalResults();
+            updateButtons();
+        }
+    }
+
+    private void showFinalResults() {
+        Car winner = model.getWinner();
+        messageTitleLabel.setText("Race Finished!");
+        messageLabel.setText("Congratulations! " + winner.getLabel() + " is the winner!");
+        resultsBox.getChildren().setAll(view.createResultRows(model.getFinishOrder()));
+        infoLabel.setText("Animations: TranslateTransition moves each car, RotateTransition spins the wheels.");
+    }
+
+    private void changeSpeed(double value) {
+        speedValueLabel.setText(String.format("%.1fx", value));
+        moves.forEach(t -> t.setRate(value));
+        spins.forEach(t -> t.setRate(value));
+    }
+
+    private void showMessage(String title, String text) {
+        messageTitleLabel.setText(title);
+        messageLabel.setText(text);
+        resultsBox.getChildren().clear();
+        infoLabel.setText("");
+    }
+
+    private void updateButtons() {
+        startButton.setDisable(!(state == State.READY || state == State.PAUSED));
+        pauseButton.setDisable(state != State.RUNNING);
+    }
+
+    public void shutdown() {
+        if (player != null) {
+            player.stop();
+        }
+        moves.forEach(Animation::stop);
+        spins.forEach(Animation::stop);
+    }
 }
