@@ -15,7 +15,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
@@ -130,7 +129,7 @@ public class CarRaceController {
             player.stop();
         }
         try {
-            App.showRace();
+            App.setRoot("secondary");
         }catch (IOException e) {
             System.err.println("Could not load secondary.fxml: " + e.getMessage());
         }
@@ -245,7 +244,6 @@ public class CarRaceController {
         messageTitleLabel.setText("Race Finished!");
         messageLabel.setText("Congratulations! " + winner.getLabel() + " is the winner!");
         resultsBox.getChildren().setAll(view.createResultRows(model.getFinishOrder()));
-        infoLabel.setText("Animations: TranslateTransition moves each car, RotateTransition spins the wheels.");
     }
 
     private void changeSpeed(double value) {
