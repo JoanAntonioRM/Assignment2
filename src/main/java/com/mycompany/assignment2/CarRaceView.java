@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -79,5 +84,46 @@ public class CarRaceView {
         spoke.setStroke(Color.web("#263238"));
         spoke.setStrokeWidth(2);
         return new Group(tire, hub, spoke);
+    }
+    
+    public Group getCarNode(CarRaceModel.Car car) {
+        return carNodes.get(car);
+    }
+
+    public List<Group> getWheels(CarRaceModel.Car car) {
+        return wheelNodes.get(car);
+    }
+
+    public Image loadImage(CarRaceModel.Car car) {
+        java.net.URL url = getClass().getResource("images/car" + car.getNumber() + ".png");
+        return url == null ? null : new Image(url.toExternalForm());
+    }
+
+    public List<Node> createResultRows(List<CarRaceModel.Car> order) {
+        List<Node> rows = new ArrayList<>();
+        Label header = new Label("Final Results:");
+        header.setStyle("-fx-font-weight: bold;");
+        rows.add(header);
+        for (CarRaceModel.Car car : order) {
+            Circle dot = new Circle(6, Color.web(car.getColorHex()));
+            Label text = new Label(ordinal(car.getFinishPlace()) + "  " + car.getLabel());
+            HBox row = new HBox(8, dot, text);
+            row.setAlignment(Pos.CENTER_LEFT);
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private String ordinal(int place) {
+        switch (place) {
+            case 1:
+                return "1st";
+            case 2:
+                return "2nd";
+            case 3:
+                return "3rd";
+            default:
+                return place + "th";
+        }
     }
 }
